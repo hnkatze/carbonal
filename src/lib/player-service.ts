@@ -1,6 +1,7 @@
 import { db } from "@/lib/firebase"
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, getDoc, query, where } from "firebase/firestore"
-import type { Player, PlayerStatus, StaffMember } from "@/types"
+import { Player, PlayerStatus, StaffMember } from "../../types"
+
 
 const PLAYER_COLLECTION = "players"
 const STAFF_COLLECTION = "staff"
