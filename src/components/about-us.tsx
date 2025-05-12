@@ -25,7 +25,7 @@ export default function AboutUs() {
             viewport={{ once: true }}
             className="relative h-80 md:h-96 lg:h-[500px] rounded-lg overflow-hidden shadow-xl"
           >
-            <Image src="https://res.cloudinary.com/djluqrprg/image/upload/f_auto,q_auto/v1/el%20carbonal/heroSect/odorgk0dstla74ndkstl?height=500&width=600" alt="El Carbonal FC" fill className="object-cover" />
+            <Image src="https://res.cloudinary.com/djluqrprg/image/upload/f_auto,q_auto/v1/el-carbonal-fc/uigxvftclgjjcdskgmzj" alt="El Carbonal FC" fill className="object-cover" />
           </motion.div>
 
           <motion.div
