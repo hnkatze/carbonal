@@ -17,16 +17,18 @@ import { Match, MatchStatus, MatchWinner } from "../../../../../../types"
 import { getMatchById, updateMatch, uploadImage } from "@/lib"
 
 
-export default function EditMatchPage({ params }: { params: { id: string } }) {
+export default function EditMatchPage({ params }: {  params: Promise<{ id: string }> }) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [match, setMatch] = useState<Match | null>(null)
 
   useEffect(() => {
+
     const fetchMatch = async () => {
       try {
-        const data = await getMatchById(params.id)
+        const { id } = await params
+        const data = await getMatchById(id)
         if (data) {
           setMatch(data)
         } else {
@@ -42,7 +44,7 @@ export default function EditMatchPage({ params }: { params: { id: string } }) {
     }
 
     fetchMatch()
-  }, [params.id, router])
+  }, [params, router])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (!match) return

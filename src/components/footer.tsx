@@ -11,7 +11,7 @@ export default function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <div className="relative h-10 w-10">
                 <Image
-                  src="/placeholder.svg?height=40&width=40"
+                  src="/logo1.png"
                   alt="El Carbonal FC Logo"
                   fill
                   className="object-contain"

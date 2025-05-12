@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
   title: "El Carbonal FC",
-  description: "Sitio oficial del club de fútbol El Carbonal FC",
+  description: "Sitio oficial del club de fútbol El Carbonal ",
 }
 
 export default function RootLayout({

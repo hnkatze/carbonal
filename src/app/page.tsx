@@ -15,7 +15,9 @@ export default function Home() {
       <AboutUs />
       <NewsSection />
       <div className="bg-sky-50 py-12">
-        <LiveMatches />
+        <section id="partidos" className="container mx-auto px-4">
+          <LiveMatches  />
+        </section>
         <CompletedMatches />
         <UpcomingMatches />
       </div>
