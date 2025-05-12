@@ -209,8 +209,8 @@ export default function EditMatchPage({ params }: {  params: Promise<{ id: strin
           matchData.winner = "draw"
         }
       }
-
-      await updateMatch(params.id, matchData)
+      const { id } = await params
+      await updateMatch(id, matchData)
       router.push("/admin/dashboard")
       router.refresh()
     } catch (error) {
