@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { CldImage } from "next-cloudinary";
-import Image from "next/image";
 
 // Datos de ejemplo
 const sponsors = [
