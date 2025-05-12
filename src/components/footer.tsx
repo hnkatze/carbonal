@@ -20,7 +20,7 @@ export default function Footer() {
               <span className="text-xl font-bold">El Carbonal FC</span>
             </div>
             <p className="text-sky-100 mb-4">
-              Comprometidos con el deporte y la comunidad. Formando jugadores y personas desde 2010.
+              Comprometidos con el deporte y la comunidad. Formando jugadores y personas desde 2017.
             </p>
             <div className="flex gap-4">
               <Link href="#" className="text-sky-100 hover:text-white">
