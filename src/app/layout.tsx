@@ -8,7 +8,40 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
   title: "El Carbonal FC",
-  description: "Sitio oficial del club de fútbol El Carbonal ",
+  description: "Sitio oficial del club de fútbol El Carbonal, equipo de Bonito Oriental, Colón, Honduras. Fundado en 2017.",
+  keywords: [
+    "El Carbonal FC",
+    "fútbol Bonito Oriental",
+    "fútbol Colón Honduras",
+    "club de fútbol Honduras",
+    "equipo de fútbol 2017",
+    "El Carbonal Bonito Oriental",
+    "fútbol hondureño",
+    "liga de fútbol Honduras"
+  ],
+  author: "El Carbonal FC",
+  openGraph: {
+    title: "El Carbonal FC",
+    description: "Sitio oficial del club de fútbol El Carbonal, Bonito Oriental, Colón, Honduras. Fundado en 2017.",
+    type: "website",
+    locale: "es_HN",
+    url: "https://elcarbonalfc.com/",
+    siteName: "El Carbonal FC",
+    images: [
+      {
+        url: "/assets/logo1.png",
+        width: 800,
+        height: 600,
+        alt: "Logo El Carbonal FC"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "El Carbonal FC",
+    description: "Sitio oficial del club de fútbol El Carbonal, Bonito Oriental, Colón, Honduras. Fundado en 2017.",
+    images: ["/assets/logo1.png"]
+  }
 }
 
 export default function RootLayout({
