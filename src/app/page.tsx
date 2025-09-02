@@ -15,11 +15,11 @@ export default function Home() {
       <AboutUs />
       <NewsSection />
       <div className="bg-sky-50 py-12">
-        <section id="partidos" className="container mx-auto px-4">
-          <LiveMatches  />
+        <section id="partidos" className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <LiveMatches />
+          <CompletedMatches />
+          <UpcomingMatches />
         </section>
-        <CompletedMatches />
-        <UpcomingMatches />
       </div>
       <Sponsors />
       <TeamSection />

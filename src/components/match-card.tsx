@@ -38,10 +38,29 @@ export default function MatchCard({
   type,
   winner,
 }: MatchCardProps) {
+  // Formatear fecha para mostrar
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return ""
+    const [year, month, day] = dateStr.split("-")
+    const months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", 
+                   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+    return `${day} ${months[parseInt(month) - 1]} ${year}`
+  }
+
+  // Formatear hora para mostrar
+  const formatTime = (timeStr?: string) => {
+    if (!timeStr) return ""
+    const [hours, minutes] = timeStr.split(":")
+    const hour = parseInt(hours)
+    const ampm = hour >= 12 ? "PM" : "AM"
+    const hour12 = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour
+    return `${hour12}:${minutes} ${ampm}`
+  }
+
   return (
     <div
       className={cn(
-        "bg-white rounded-lg shadow-md overflow-hidden border-l-4",
+        "bg-white rounded-lg shadow-md overflow-hidden border-l-4 h-full flex flex-col",
         type === "live" && "border-red-500",
         type === "upcoming" && "border-sky-500",
         type === "completed" && winner === "home" && "border-green-500",
@@ -49,7 +68,7 @@ export default function MatchCard({
         type === "completed" && winner === "draw" && "border-gray-500",
       )}
     >
-      <div className="p-4">
+      <div className="p-4 flex-1 flex flex-col">
         <div className="flex justify-between items-center mb-3">
           <span className="text-sm font-medium text-gray-500">{tournament}</span>
           {type === "live" && (
@@ -64,7 +83,7 @@ export default function MatchCard({
           {type === "completed" && <span className="text-sm font-medium text-gray-500">Finalizado</span>}
         </div>
 
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center flex-1">
           <div className="flex flex-col items-center text-center w-2/5">
             <div className="relative w-16 h-16 mb-2">
               <Image src={homeTeam.logo || "/placeholder.svg"} alt={homeTeam.name} fill className="object-contain" />
@@ -78,13 +97,7 @@ export default function MatchCard({
           </div>
 
           <div className="flex flex-col items-center justify-center w-1/5">
-            {type === "upcoming" && (
-              <div className="text-center">
-                <div className="text-sm font-medium">{date}</div>
-                <div className="text-sm">{time}</div>
-              </div>
-            )}
-            {(type === "live" || type === "completed") && <span className="text-xl font-bold">vs</span>}
+            <span className="text-xl font-bold">vs</span>
           </div>
 
           <div className="flex flex-col items-center text-center w-2/5">
@@ -100,30 +113,35 @@ export default function MatchCard({
           </div>
         </div>
 
+        {/* Fecha y hora para partidos próximos */}
+        {type === "upcoming" && (
+          <div className="mt-4 pt-3 border-t border-gray-200 text-center">
+            <div className="text-sm font-medium text-gray-700">
+              {formatDate(date)}
+            </div>
+            <div className="text-sm text-gray-600">
+              {formatTime(time)}
+            </div>
+            {venue && <div className="text-xs text-gray-500 mt-1">📍 {venue}</div>}
+          </div>
+        )}
+
         {/* Scorers for live and completed matches */}
         {(type === "live" || type === "completed") && (
-          <div className="mt-4 pt-3 border-t border-gray-200 text-xs text-gray-500">
+          <div className="mt-4 pt-3 border-t border-gray-200 text-xs text-gray-500 min-h-[60px]">
             <div className="flex justify-between">
               <div className="w-[45%] text-left">
                 {homeTeam.scorers?.map((scorer, index) => (
-                  <div key={`home-${index}`}>{scorer}</div>
+                  <div key={`home-${index}`}>⚽ {scorer}</div>
                 ))}
               </div>
               <div className="w-[10%]"></div>
               <div className="w-[45%] text-right">
                 {awayTeam.scorers?.map((scorer, index) => (
-                  <div key={`away-${index}`}>{scorer}</div>
+                  <div key={`away-${index}`}>{scorer} ⚽</div>
                 ))}
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Description for upcoming matches */}
-        {type === "upcoming" && description && (
-          <div className="mt-4 pt-3 border-t border-gray-200">
-            <p className="text-sm text-gray-600">{description}</p>
-            {venue && <p className="text-xs text-gray-500 mt-1">Lugar: {venue}</p>}
           </div>
         )}
       </div>
