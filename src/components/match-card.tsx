@@ -32,7 +32,6 @@ export default function MatchCard({
   tournament,
   date,
   time,
-  description,
   timeRemaining,
   venue,
   type,

@@ -76,10 +76,10 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Contacto</h3>
             <address className="not-italic text-sky-100">
-              <p>Estadio El Carbonal</p>
-              <p>Calle Principal #123</p>
-              <p>Ciudad, País</p>
-              <p className="mt-2">info@elcarbonalfc.com</p>
+              <p>Estadio Bonito Oriental</p>
+              <p>El Carbonal</p>
+              <p>Bonito Oriental, Honduras</p>
+              <p className="mt-2">elcarbonalfc@outlook.com</p>
               <p>+123 456 7890</p>
             </address>
           </div>
@@ -87,6 +87,17 @@ export default function Footer() {
 
         <div className="border-t border-sky-800 mt-8 pt-8 text-center text-sky-200">
           <p>&copy; {new Date().getFullYear()} El Carbonal FC. Todos los derechos reservados.</p>
+          <p className="text-xs mt-2 text-sky-300">
+            Desarrollado por{" "}
+            <Link 
+              href="https://www.linkedin.com/in/hnkatze" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors underline-offset-2 hover:underline"
+            >
+              Camilo Henriquez
+            </Link>
+          </p>
         </div>
       </div>
     </footer>
