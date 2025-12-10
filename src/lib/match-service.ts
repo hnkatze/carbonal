@@ -1,25 +1,23 @@
 import { db } from "@/lib/firebase"
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, getDoc, query, where } from "firebase/firestore"
+import { serializeFirestoreData } from "./serialize"
 import { Match, MatchStatus } from "../../types"
-
 
 const COLLECTION = "matches"
 
 export const getMatches = async (): Promise<Match[]> => {
   const querySnapshot = await getDocs(collection(db, COLLECTION))
-  return querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Match[]
+  return querySnapshot.docs.map((docSnap) =>
+    serializeFirestoreData<Match>({ id: docSnap.id, ...docSnap.data() })
+  )
 }
 
 export const getMatchesByStatus = async (status: MatchStatus): Promise<Match[]> => {
   const q = query(collection(db, COLLECTION), where("status", "==", status))
   const querySnapshot = await getDocs(q)
-  return querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Match[]
+  return querySnapshot.docs.map((docSnap) =>
+    serializeFirestoreData<Match>({ id: docSnap.id, ...docSnap.data() })
+  )
 }
 
 export const getMatchById = async (id: string): Promise<Match | null> => {

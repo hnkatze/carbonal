@@ -1,12 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import MatchCard from "./match-card"
-
-import { Loader2 } from "lucide-react"
-import { Match } from "../../types"
-import { getMatchesByStatus } from "@/lib"
+import { useMatchesByStatus } from "@/hooks"
+import type { Match, MatchStatus } from "../../types"
 
 // Función para calcular el tiempo restante
 const calculateTimeRemaining = (dateStr: string, timeStr: string): string => {
@@ -27,37 +24,16 @@ const calculateTimeRemaining = (dateStr: string, timeStr: string): string => {
   return `${diffDays} días`
 }
 
-export default function UpcomingMatches() {
-  const [upcomingMatches, setUpcomingMatches] = useState<Match[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+interface MatchesSectionProps {
+  type: MatchStatus
+  initialData: Match[]
+  title: string
+}
 
-  useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        const matches = await getMatchesByStatus("upcoming")
-        setUpcomingMatches(matches)
-      } catch (error) {
-        console.error("Error al cargar próximos partidos:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
+export default function MatchesSection({ type, initialData, title }: MatchesSectionProps) {
+  const { data: matches = [] } = useMatchesByStatus(type, initialData)
 
-    fetchMatches()
-  }, [])
-
-  if (isLoading) {
-    return (
-      <div>
-        <h3 className="text-xl font-bold mb-4 text-sky-800">Próximos Partidos</h3>
-        <div className="flex justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-sky-600" />
-        </div>
-      </div>
-    )
-  }
-
-  if (upcomingMatches.length === 0) {
+  if (matches.length === 0) {
     return null
   }
 
@@ -70,10 +46,10 @@ export default function UpcomingMatches() {
         viewport={{ once: true }}
         className="text-xl font-bold mb-4 text-sky-800"
       >
-        Próximos Partidos
+        {title}
       </motion.h3>
       <div className="space-y-4">
-        {upcomingMatches.map((match, index) => (
+        {matches.map((match, index) => (
           <motion.div
             key={match.id}
             initial={{ opacity: 0, y: 20 }}
@@ -88,9 +64,10 @@ export default function UpcomingMatches() {
               date={match.date}
               time={match.time}
               description={match.description}
-              timeRemaining={calculateTimeRemaining(match.date || "", match.time || "")}
+              timeRemaining={type === "upcoming" ? calculateTimeRemaining(match.date || "", match.time || "") : undefined}
               venue={match.venue}
-              type="upcoming"
+              type={type}
+              winner={type === "completed" ? (match.winner || "draw") : undefined}
             />
           </motion.div>
         ))}

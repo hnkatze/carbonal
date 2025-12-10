@@ -1,7 +1,7 @@
 import { db } from "@/lib/firebase"
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, getDoc, query, where } from "firebase/firestore"
+import { serializeFirestoreData } from "./serialize"
 import { Player, PlayerStatus, StaffMember } from "../../types"
-
 
 const PLAYER_COLLECTION = "players"
 const STAFF_COLLECTION = "staff"
@@ -9,19 +9,17 @@ const STAFF_COLLECTION = "staff"
 // Player services
 export const getPlayers = async (): Promise<Player[]> => {
   const querySnapshot = await getDocs(collection(db, PLAYER_COLLECTION))
-  return querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Player[]
+  return querySnapshot.docs.map((docSnap) =>
+    serializeFirestoreData<Player>({ id: docSnap.id, ...docSnap.data() })
+  )
 }
 
 export const getPlayersByStatus = async (status: PlayerStatus): Promise<Player[]> => {
   const q = query(collection(db, PLAYER_COLLECTION), where("status", "==", status))
   const querySnapshot = await getDocs(q)
-  return querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Player[]
+  return querySnapshot.docs.map((docSnap) =>
+    serializeFirestoreData<Player>({ id: docSnap.id, ...docSnap.data() })
+  )
 }
 
 export const getPlayerById = async (id: string): Promise<Player | null> => {
@@ -53,10 +51,9 @@ export const deletePlayer = async (id: string): Promise<void> => {
 // Staff services
 export const getStaff = async (): Promise<StaffMember[]> => {
   const querySnapshot = await getDocs(collection(db, STAFF_COLLECTION))
-  return querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as StaffMember[]
+  return querySnapshot.docs.map((docSnap) =>
+    serializeFirestoreData<StaffMember>({ id: docSnap.id, ...docSnap.data() })
+  )
 }
 
 export const getStaffMemberById = async (id: string): Promise<StaffMember | null> => {

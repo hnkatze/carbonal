@@ -1,59 +1,41 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { motion } from "framer-motion"
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { News } from "../../types"
-import { getNews } from "@/lib"
+import { ArrowRight } from "lucide-react"
+import { useNews } from "@/hooks"
+import type { News } from "../../types"
 
+interface NewsSectionProps {
+  initialData: News[]
+}
 
-export default function NewsSection() {
-  const [newsItems, setNewsItems] = useState<News[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedNews, setSelectedNews] = useState<News | null>(null)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const news = await getNews()
-        setNewsItems(news)
-      } catch (error) {
-        console.error("Error al cargar noticias:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchNews()
-  }, [])
-
-  const nextImage = () => {
-    if (selectedNews && selectedNews.images && selectedNews.images.length > 0) {
-      setCurrentImageIndex((prev) => (prev === selectedNews.images.length - 1 ? 0 : prev + 1))
-    }
+// Formatear fecha a formato legible
+const formatDate = (dateStr: string): string => {
+  try {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString("es-HN", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+  } catch {
+    return dateStr
   }
+}
 
-  const prevImage = () => {
-    if (selectedNews && selectedNews.images && selectedNews.images.length > 0) {
-      setCurrentImageIndex((prev) => (prev === 0 ? selectedNews.images.length - 1 : prev - 1))
-    }
-  }
+// Ordenar noticias por fecha descendente
+const sortByDate = (news: News[]): News[] => {
+  return [...news].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+}
 
-  if (isLoading) {
-    return (
-      <section id="noticias" className="py-16 px-4">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-sky-800">Últimas Noticias</h2>
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-sky-600" />
-          </div>
-        </div>
-      </section>
-    )
-  }
+export default function NewsSection({ initialData }: NewsSectionProps) {
+  const { data: newsItems = [] } = useNews(initialData)
+
+  // Ordenar y limitar a 5 noticias
+  const sortedNews = sortByDate(newsItems).slice(0, 5)
+  const [featuredNews, ...otherNews] = sortedNews
 
   if (newsItems.length === 0) {
     return (
@@ -79,97 +61,93 @@ export default function NewsSection() {
           Últimas Noticias
         </motion.h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {newsItems.map((news, index) => (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Noticia destacada */}
+          {featuredNews && (
             <motion.div
-              key={news.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              className="bg-white rounded-lg shadow-lg overflow-hidden"
+              className="lg:row-span-2"
             >
-              <div className="relative h-48">
-                <Image
-                  src={news.images && news.images.length > 0 ? news.images[0] : "/placeholder.svg"}
-                  alt={news.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <span className="text-sm text-sky-600">{news.date}</span>
-                <h3 className="text-xl font-bold mt-2 mb-3">{news.title}</h3>
-                <p className="text-gray-600 mb-4 line-clamp-2">{news.description}</p>
-                <button
-                  onClick={() => {
-                    setSelectedNews(news)
-                    setCurrentImageIndex(0)
-                  }}
-                  className="text-sky-600 font-medium hover:text-sky-800 transition-colors"
-                >
-                  Ver más
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Modal para ver noticia completa */}
-      <Dialog open={!!selectedNews} onOpenChange={(open) => !open && setSelectedNews(null)}>
-        <DialogContent className="sm:max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">{selectedNews?.title}</DialogTitle>
-            <span className="text-sm text-sky-600">{selectedNews?.date}</span>
-          </DialogHeader>
-
-          {selectedNews && selectedNews.images && selectedNews.images.length > 0 && (
-            <div className="relative mt-4 h-64 sm:h-80 md:h-96">
-              <Image
-                src={selectedNews.images[currentImageIndex] || "/placeholder.svg"}
-                alt={selectedNews.title}
-                fill
-                className="object-cover rounded-md"
-              />
-
-              {selectedNews.images.length > 1 && (
-                <>
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-1 rounded-full"
-                    aria-label="Imagen anterior"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-1 rounded-full"
-                    aria-label="Imagen siguiente"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                    {selectedNews.images.map((_: string, index: number) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentImageIndex(index)}
-                        className={`w-2 h-2 rounded-full ${index === currentImageIndex ? "bg-white" : "bg-white/50"}`}
-                        aria-label={`Ir a imagen ${index + 1}`}
-                      />
-                    ))}
+              <Link href={`/noticias/${featuredNews.id}`} className="group block h-full">
+                <article className="bg-white rounded-lg shadow-lg overflow-hidden h-full flex flex-col">
+                  <div className="relative aspect-video lg:aspect-auto lg:flex-1 lg:min-h-[300px]">
+                    <Image
+                      src={featuredNews.images?.[0] || "/placeholder.svg"}
+                      alt={featuredNews.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <span className="text-sm text-sky-300">{formatDate(featuredNews.date)}</span>
+                      <h3 className="text-2xl font-bold mt-2 group-hover:text-sky-300 transition-colors">
+                        {featuredNews.title}
+                      </h3>
+                      <p className="mt-2 text-gray-200 line-clamp-2">{featuredNews.description}</p>
+                      <span className="inline-flex items-center gap-1 mt-3 text-sky-300 font-medium">
+                        Leer más <ArrowRight className="h-4 w-4" />
+                      </span>
+                    </div>
                   </div>
-                </>
-              )}
-            </div>
+                </article>
+              </Link>
+            </motion.div>
           )}
 
-          <div className="mt-4">
-            <p className="text-gray-700">{selectedNews?.content}</p>
+          {/* Grid de noticias secundarias */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {otherNews.map((news, index) => (
+              <motion.div
+                key={news.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Link href={`/noticias/${news.id}`} className="group block">
+                  <article className="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div className="relative aspect-video">
+                      <Image
+                        src={news.images?.[0] || "/placeholder.svg"}
+                        alt={news.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <span className="text-xs text-sky-600">{formatDate(news.date)}</span>
+                      <h3 className="font-bold mt-1 line-clamp-2 group-hover:text-sky-600 transition-colors">
+                        {news.title}
+                      </h3>
+                    </div>
+                  </article>
+                </Link>
+              </motion.div>
+            ))}
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+
+        {/* Botón ver todas */}
+        {newsItems.length > 5 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            viewport={{ once: true }}
+            className="text-center mt-8"
+          >
+            <Link
+              href="/noticias"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors font-medium"
+            >
+              Ver todas las noticias <ArrowRight className="h-4 w-4" />
+            </Link>
+          </motion.div>
+        )}
+      </div>
     </section>
   )
 }

@@ -1,34 +1,20 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
-import { GalleryImage } from "../../types"
-import { getGalleryImages } from "@/lib"
+import { X, ChevronLeft, ChevronRight } from "lucide-react"
+import { useGallery } from "@/hooks"
+import type { GalleryImage } from "../../types"
 
+interface GalleryProps {
+  initialData: GalleryImage[]
+}
 
-export default function Gallery() {
-  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+export default function Gallery({ initialData }: GalleryProps) {
+  const { data: galleryImages = [] } = useGallery(initialData)
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
-
-  useEffect(() => {
-    const fetchGallery = async () => {
-      try {
-        const images = await getGalleryImages()
-        setGalleryImages(images)
-      } catch (error) {
-        console.error("Error al cargar la galería:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchGallery()
-  }, [])
 
   const openLightbox = (index: number) => {
     setSelectedImage(index)
@@ -48,19 +34,6 @@ export default function Gallery() {
     e.stopPropagation()
     if (selectedImage === null) return
     setSelectedImage((selectedImage - 1 + galleryImages.length) % galleryImages.length)
-  }
-
-  if (isLoading) {
-    return (
-      <section id="galeria" className="py-16 px-4">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-sky-800">Galería</h2>
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-sky-600" />
-          </div>
-        </div>
-      </section>
-    )
   }
 
   if (galleryImages.length === 0) {

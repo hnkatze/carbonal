@@ -1,15 +1,15 @@
 import { db } from "@/lib/firebase"
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, getDoc } from "firebase/firestore"
+import { serializeFirestoreData } from "./serialize"
 import type { News } from "../../types"
 
 const COLLECTION = "news"
 
 export const getNews = async (): Promise<News[]> => {
   const querySnapshot = await getDocs(collection(db, COLLECTION))
-  return querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as News[]
+  return querySnapshot.docs.map((docSnap) =>
+    serializeFirestoreData<News>({ id: docSnap.id, ...docSnap.data() })
+  )
 }
 
 export const getNewsById = async (id: string): Promise<News | null> => {
@@ -17,7 +17,7 @@ export const getNewsById = async (id: string): Promise<News | null> => {
   const docSnap = await getDoc(docRef)
 
   if (docSnap.exists()) {
-    return { id: docSnap.id, ...docSnap.data() } as News
+    return serializeFirestoreData<News>({ id: docSnap.id, ...docSnap.data() })
   } else {
     return null
   }

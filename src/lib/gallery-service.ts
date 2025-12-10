@@ -1,15 +1,15 @@
 import { db } from "@/lib/firebase"
 import { collection, addDoc, deleteDoc, doc, getDocs, getDoc } from "firebase/firestore"
+import { serializeFirestoreData } from "./serialize"
 import type { GalleryImage } from "../../types"
 
 const COLLECTION = "gallery"
 
 export const getGalleryImages = async (): Promise<GalleryImage[]> => {
   const querySnapshot = await getDocs(collection(db, COLLECTION))
-  return querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as GalleryImage[]
+  return querySnapshot.docs.map((docSnap) =>
+    serializeFirestoreData<GalleryImage>({ id: docSnap.id, ...docSnap.data() })
+  )
 }
 
 export const getGalleryImageById = async (id: string): Promise<GalleryImage | null> => {

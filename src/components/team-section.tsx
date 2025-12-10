@@ -1,50 +1,22 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2 } from "lucide-react"
-import { getPlayers, getStaff } from "@/lib"
-import { Player, StaffMember } from "../../types"
+import { usePlayers, useStaff } from "@/hooks"
+import type { Player, StaffMember } from "../../types"
 
+interface TeamSectionProps {
+  initialPlayers: Player[]
+  initialStaff: StaffMember[]
+}
 
-export default function TeamSection() {
-  const [players, setPlayers] = useState<Player[]>([])
-  const [staff, setStaff] = useState<StaffMember[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+export default function TeamSection({ initialPlayers, initialStaff }: TeamSectionProps) {
+  const { data: players = [] } = usePlayers(initialPlayers)
+  const { data: staff = [] } = useStaff(initialStaff)
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
   const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null)
-
-  useEffect(() => {
-    const fetchTeam = async () => {
-      try {
-        const playersData = await getPlayers()
-        const staffData = await getStaff()
-        setPlayers(playersData)
-        setStaff(staffData)
-      } catch (error) {
-        console.error("Error al cargar el equipo:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchTeam()
-  }, [])
-
-  if (isLoading) {
-    return (
-      <section id="equipo" className="py-16 px-4 bg-gradient-to-b from-sky-50 to-white">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-sky-800">Nuestro Equipo</h2>
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-sky-600" />
-          </div>
-        </div>
-      </section>
-    )
-  }
 
   return (
     <section id="equipo" className="py-16 px-4 bg-gradient-to-b from-sky-50 to-white">
